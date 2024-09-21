@@ -1,6 +1,9 @@
 package com.example.sushipatria;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +22,24 @@ public class activityMenuPrincipal extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        Button btnDisponible = findViewById(R.id.btnDisponible);
+        btnDisponible.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activityMenuPrincipal.this, activityDisponible.class);
+                startActivity(intent);
+            }
+        });
+
+        Button btnRealizarPedido = findViewById(R.id.btnRealizarPedido);
+        btnRealizarPedido.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activityMenuPrincipal.this, activityRealizarPedido.class);
+                startActivity(intent);
+            }
         });
     }
 }
