@@ -41,5 +41,14 @@ public class activityMenuPrincipal extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Button btnVerSucursales = findViewById(R.id.btnVerSucursales);
+        btnVerSucursales.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activityMenuPrincipal.this,activityVerSucursales.class);
+                startActivity(intent);
+            }
+        });
     }
 }
