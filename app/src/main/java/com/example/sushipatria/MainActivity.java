@@ -6,48 +6,48 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText editTextUsername;
-    private EditText editTextPassword;
+    private EditText editTextUsuario;
+    private EditText editTextClave;
+    private Button btnIngresar;
     private DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-
-        editTextUsername = findViewById(R.id.editTextUsername);
-        editTextPassword = findViewById(R.id.editTextPassword);
         databaseHelper = new DatabaseHelper(this);
 
-        Button btnIngresar = findViewById(R.id.btnIngresar);
+        editTextUsuario = findViewById(R.id.editTextUsuario);
+        editTextClave = findViewById(R.id.editTextClave);
+        btnIngresar = findViewById(R.id.btnIngresar);
+
         btnIngresar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = editTextUsername.getText().toString();
-                String password = editTextPassword.getText().toString();
+                String username = editTextUsuario.getText().toString();
+                String password = editTextClave.getText().toString();
 
                 if (databaseHelper.checkUserCredentials(username, password)) {
-                    Toast.makeText(MainActivity.this, "Inicio De Sesion Exitoso, Bienveni@!", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this, activityMenuPrincipal.class);
                     startActivity(intent);
+                    Toast.makeText(MainActivity.this, "Ingreso Exitoso", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MainActivity.this, "Credenciales Inválidas", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Usuario O Contraseña Incorrectos", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        Button btnCrearUsuario = findViewById(R.id.btnCrearUsuario);
+        btnCrearUsuario.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, activityCrearUsuario.class);
+                startActivity(intent);
             }
         });
     }

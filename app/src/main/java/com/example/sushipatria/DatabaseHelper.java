@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "SushiPatria.db";
     private static final int DATABASE_VERSION = 1;
-    private static final String TABLE_USERS = "Usuarios";
+    private static final String TABLE_USERS = "users";
     private static final String COLUMN_USERNAME = "username";
     private static final String COLUMN_PASSWORD = "password";
 
@@ -44,5 +44,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         boolean exists = (cursor.getCount() > 0);
         cursor.close();
         return exists;
+    }
+
+    public boolean isUserExists(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE username=?", new String[]{username});
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        return exists;
+    }
+
+    public void addUser(String username, String password) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("username", username);
+        values.put("password", password);
+        db.insert("users", null, values);
+        db.close();
     }
 }
