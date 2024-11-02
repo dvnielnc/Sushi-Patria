@@ -60,7 +60,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editTextSushipleto"
+            android:id="@+id/cantidadSushipleto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Cantidad"
@@ -86,7 +86,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editTextSushiburger"
+            android:id="@+id/cantidadSushiburger"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Cantidad"
@@ -112,7 +112,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editTextSushipizza"
+            android:id="@+id/cantidadSushipizza"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Cantidad"
@@ -162,15 +162,27 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/btnPagarPedido"
+            android:id="@+id/btnAgregarPedido"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
-            android:text="Pagar Pedido"
+            android:text="Agregar Pedido"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintHorizontal_bias="0.181"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btnEditarPedido"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Editar Pedido"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.829"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.993" />
 
         <ImageView
             android:id="@+id/imageView2"
