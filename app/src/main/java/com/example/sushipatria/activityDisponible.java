@@ -23,5 +23,14 @@ public class activityDisponible extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        Button btnVolverProductosDisponibles = findViewById(R.id.btnVolverProductosDisponibles);
+        btnVolverProductosDisponibles.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(activityDisponible.this, activityMenuPrincipal.class);
+                startActivity(intent);
+            }
+        });
     }
 }

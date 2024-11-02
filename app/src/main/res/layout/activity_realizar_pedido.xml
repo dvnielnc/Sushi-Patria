@@ -32,19 +32,19 @@
 
         <TextView
             android:id="@+id/textView21"
-            android:layout_width="292dp"
-            android:layout_height="42dp"
+            android:layout_width="296dp"
+            android:layout_height="58dp"
             android:layout_marginTop="288dp"
             android:gravity="center"
-            android:text="Selecciona Tu Producto"
+            android:text="Selecciona Tu Producto Y Las Salsas"
             android:textSize="22dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.494"
+            app:layout_constraintHorizontal_bias="0.493"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.013" />
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/textView22"
@@ -124,28 +124,14 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.716" />
 
-        <TextView
-            android:id="@+id/textView25"
-            android:layout_width="294dp"
-            android:layout_height="42dp"
-            android:layout_marginTop="532dp"
-            android:gravity="center"
-            android:text="Selecciona Las Salsas"
-            android:textSize="22dp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.505"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <CheckBox
             android:id="@+id/checkBoxSoya"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="588dp"
+            android:layout_marginTop="528dp"
             android:text="Salsa Soya"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.155"
+            app:layout_constraintHorizontal_bias="0.148"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -154,7 +140,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="80dp"
-            android:layout_marginTop="588dp"
+            android:layout_marginTop="528dp"
             android:text="Salsa Teriyaki"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.762"
@@ -165,7 +151,7 @@
             android:id="@+id/btnAgregarPedido"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
+            android:layout_marginBottom="64dp"
             android:text="Agregar Pedido"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -182,7 +168,7 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.993" />
+            app:layout_constraintVertical_bias="0.901" />
 
         <ImageView
             android:id="@+id/imageView2"
@@ -195,6 +181,18 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.142"
             app:srcCompat="@drawable/logo" />
+
+        <Button
+            android:id="@+id/btnVolverRealizarPedido"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Volver"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.44"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -39,6 +39,15 @@ public class activityRealizarPedido extends AppCompatActivity {
         elegirSalsaSoya = findViewById(R.id.checkBoxSoya);
         elegirSalsaTeriyaki = findViewById(R.id.checkBoxTeriyaki);
 
+        Button btnVolverRealizarPedido = findViewById(R.id.btnVolverRealizarPedido);
+        btnVolverRealizarPedido.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activityRealizarPedido.this, activityMenuPrincipal.class);
+                startActivity(intent);
+            }
+        });
+
         Button btnVerOEditarPedido = findViewById(R.id.btnVerOEditarPedido);
         btnVerOEditarPedido.setOnClickListener(new View.OnClickListener() {
             @Override
