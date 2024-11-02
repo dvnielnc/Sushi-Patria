@@ -23,8 +23,23 @@
 
     <ListView
         android:id="@+id/verPedidos"
-        android:layout_width="376dp"
-        android:layout_height="606dp"
-        tools:layout_editor_absoluteX="17dp"
-        tools:layout_editor_absoluteY="94dp" />
+        android:layout_width="366dp"
+        android:layout_height="542dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.497" />
+
+    <Button
+        android:id="@+id/btnVolverEditarPedidos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Volver"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.959" />
 </androidx.constraintlayout.widget.ConstraintLayout>

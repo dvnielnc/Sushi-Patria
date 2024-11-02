@@ -17,7 +17,7 @@
             android:exported="false" />
         <activity
             android:name=".activityEditarPedido"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".activityCrearUsuario"
             android:exported="false" />
@@ -26,12 +26,6 @@
             android:exported="false" />
         <activity
             android:name=".activityRealizarPedido"
-            android:exported="false" />
-        <activity
-            android:name=".activity_disponible"
-            android:exported="false" />
-        <activity
-            android:name=".activityCalificanos"
             android:exported="false" />
         <activity
             android:name=".activityDisponible"
