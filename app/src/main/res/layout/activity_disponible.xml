@@ -23,7 +23,6 @@
         tools:layout_editor_absoluteX="100dp"
         tools:layout_editor_absoluteY="20dp" />
 
-    <!-- CardView para SushiBurger -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardViewSushiBurger"
         android:layout_width="match_parent"
@@ -87,7 +86,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- CardView para SushiPleto -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardViewSushiPleto"
         android:layout_width="match_parent"
@@ -151,7 +149,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- CardView para SushiPizza -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardViewSushiPizza"
         android:layout_width="match_parent"
