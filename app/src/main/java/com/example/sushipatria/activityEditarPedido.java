@@ -18,6 +18,7 @@ public class activityEditarPedido extends AppCompatActivity {
     private EditText cantSushipleto, cantSushiburger, cantSushipizza;
     private CheckBox elegirSalsaSoya, elegirSalsaTeriyaki;
     private Button btnRealizarCambios, btnEliminarPedido, btnVolver;
+    private String id;  // Variable para almacenar el id del pedido
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +35,14 @@ public class activityEditarPedido extends AppCompatActivity {
         btnVolver = findViewById(R.id.btnVolver);
 
         Intent i = getIntent();
-        String id = i.getStringExtra("id");
+        id = i.getStringExtra("id");
         String sushipleto = i.getStringExtra("cantidadSushipleto");
         String sushiburger = i.getStringExtra("cantidadSushiburger");
         String sushipizza = i.getStringExtra("cantidadSushipizza");
         String salsaSoya = i.getStringExtra("salsaSoya");
         String salsaTeriyaki = i.getStringExtra("salsaTeriyaki");
 
-        Toast.makeText(this, "Espere..." + id, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Espere... ID: " + id, Toast.LENGTH_LONG).show();
 
         cantSushipleto.setText(sushipleto);
         cantSushiburger.setText(sushiburger);
@@ -66,29 +67,21 @@ public class activityEditarPedido extends AppCompatActivity {
         btnVolver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), activityVerPedidos.class);
-                startActivity(i);
+                Intent intent = new Intent(getApplicationContext(), activityVerPedidos.class);
+                startActivity(intent);
             }
         });
     }
 
     public void eliminar() {
         try {
-            String sushipleto = cantSushipleto.getText().toString();
-            String sushiburger = cantSushiburger.getText().toString();
-            String sushipizza = cantSushipizza.getText().toString();
-
             SQLiteDatabase db = openOrCreateDatabase("SushiPatria", Context.MODE_PRIVATE, null);
-
-            String sql = "DELETE FROM productos WHERE cantidadSushipleto = ? AND cantidadSushiburger = ? AND cantidadSushipizza = ?";
+            String sql = "DELETE FROM productos WHERE id = ?";
             SQLiteStatement statement = db.compileStatement(sql);
 
-            statement.bindString(1, sushipleto);
-            statement.bindString(2, sushiburger);
-            statement.bindString(3, sushipizza);
+            statement.bindString(1, id);
 
             statement.execute();
-
             Toast.makeText(this, "Pedido Eliminado Correctamente", Toast.LENGTH_LONG).show();
 
             cantSushipleto.setText("");
@@ -112,7 +105,7 @@ public class activityEditarPedido extends AppCompatActivity {
 
             SQLiteDatabase db = openOrCreateDatabase("SushiPatria", Context.MODE_PRIVATE, null);
 
-            String sql = "UPDATE productos SET cantidadSushipleto = ?, cantidadSushiburger = ?, cantidadSushipizza = ?, salsaSoya = ?, salsaTeriyaki = ? WHERE cantidadSushipleto = ? AND cantidadSushiburger = ? AND cantidadSushipizza = ?";
+            String sql = "UPDATE productos SET cantidadSushipleto = ?, cantidadSushiburger = ?, cantidadSushipizza = ?, salsaSoya = ?, salsaTeriyaki = ? WHERE id = ?";
             SQLiteStatement statement = db.compileStatement(sql);
 
             statement.bindString(1, sushipleto);
@@ -120,13 +113,9 @@ public class activityEditarPedido extends AppCompatActivity {
             statement.bindString(3, sushipizza);
             statement.bindLong(4, salsaSoya);
             statement.bindLong(5, salsaTeriyaki);
-
-            statement.bindString(6, sushipleto);
-            statement.bindString(7, sushiburger);
-            statement.bindString(8, sushipizza);
+            statement.bindString(6, id);
 
             statement.execute();
-
             Toast.makeText(this, "Pedido Actualizado Correctamente", Toast.LENGTH_LONG).show();
 
             cantSushipleto.setText("");
