@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "871049477562",
+    "firebase_url": "https://sushipatria-default-rtdb.firebaseio.com",
+    "project_id": "sushipatria",
+    "storage_bucket": "sushipatria.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871049477562:android:761204bf9033f8944e3183",
+        "android_client_info": {
+          "package_name": "com.example.sushipatria"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBle0pHRSi0BE6a1hb95vhgbHVVXSoR-yE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

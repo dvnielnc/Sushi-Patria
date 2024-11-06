@@ -1,9 +1,5 @@
 package com.example.sushipatria;
 
-import android.content.Context;
-import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,119 +9,138 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+
 public class activityEditarPedido extends AppCompatActivity {
 
-    private EditText cantSushipleto, cantSushiburger, cantSushipizza;
-    private CheckBox elegirSalsaSoya, elegirSalsaTeriyaki;
-    private Button btnRealizarCambios, btnEliminarPedido, btnVolver;
-    private String id;  // Variable para almacenar el id del pedido
+    private EditText cantidadSushipleto, cantidadSushiburger, cantidadSushipizza;
+    private CheckBox checkBoxSoya, checkBoxTeriyaki;
+    private Button btnGuardarCambios, btnEliminarPedido, btnVolver;
+    private String pedidoId;
+    private String nombrePedido;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editar_pedido);
 
-        cantSushipleto = findViewById(R.id.editarCantidadSushipleto);
-        cantSushiburger = findViewById(R.id.editarCantidadSushiburger);
-        cantSushipizza = findViewById(R.id.editarCantidadSushipizza);
-        elegirSalsaSoya = findViewById(R.id.editarSalsaSoya);
-        elegirSalsaTeriyaki = findViewById(R.id.editarSalsaTeriyaki);
-        btnRealizarCambios = findViewById(R.id.btnRealizarCambios);
+        cantidadSushipleto = findViewById(R.id.editarCantidadSushipleto);
+        cantidadSushiburger = findViewById(R.id.editarCantidadSushiburger);
+        cantidadSushipizza = findViewById(R.id.editarCantidadSushipizza);
+        checkBoxSoya = findViewById(R.id.editarSalsaSoya);
+        checkBoxTeriyaki = findViewById(R.id.editarSalsaTeriyaki);
+        btnGuardarCambios = findViewById(R.id.btnRealizarCambios);
         btnEliminarPedido = findViewById(R.id.btnEliminarPedido);
         btnVolver = findViewById(R.id.btnVolver);
 
-        Intent i = getIntent();
-        id = i.getStringExtra("id");
-        String sushipleto = i.getStringExtra("cantidadSushipleto");
-        String sushiburger = i.getStringExtra("cantidadSushiburger");
-        String sushipizza = i.getStringExtra("cantidadSushipizza");
-        String salsaSoya = i.getStringExtra("salsaSoya");
-        String salsaTeriyaki = i.getStringExtra("salsaTeriyaki");
+        pedidoId = getIntent().getStringExtra("pedidoId");
+        if (pedidoId == null) {
+            Toast.makeText(this, "Error: No Se Pudo Cargar El Pedido.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
-        Toast.makeText(this, "Espere... ID: " + id, Toast.LENGTH_LONG).show();
+        cargarDatosPedido();
 
-        cantSushipleto.setText(sushipleto);
-        cantSushiburger.setText(sushiburger);
-        cantSushipizza.setText(sushipizza);
-        elegirSalsaSoya.setChecked(salsaSoya.equals("1"));
-        elegirSalsaTeriyaki.setChecked(salsaTeriyaki.equals("1"));
-
-        btnRealizarCambios.setOnClickListener(new View.OnClickListener() {
+        btnGuardarCambios.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                editar();
+            public void onClick(View v) {
+                actualizarPedidoEnFirebase();
             }
         });
 
         btnEliminarPedido.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                eliminar();
+            public void onClick(View v) {
+                eliminarPedidoDeFirebase();
             }
         });
 
-        btnVolver.setOnClickListener(new View.OnClickListener() {
+        btnVolver.setOnClickListener(v -> finish());
+    }
+
+    private void cargarDatosPedido() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Pedidos").child(pedidoId).child("Detalles Del Pedido");
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), activityVerPedidos.class);
-                startActivity(intent);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    nombrePedido = dataSnapshot.child("nombre").getValue(String.class);
+                    Integer sushipleto = dataSnapshot.child("sushipleto").getValue(Integer.class);
+                    Integer sushiburger = dataSnapshot.child("sushiburger").getValue(Integer.class);
+                    Integer sushipizza = dataSnapshot.child("sushipizza").getValue(Integer.class);
+                    String salsaSoya = dataSnapshot.child("salsaSoya").getValue(String.class);
+                    String salsaTeriyaki = dataSnapshot.child("salsaTeriyaki").getValue(String.class);
+
+                    cantidadSushipleto.setText(sushipleto != null ? String.valueOf(sushipleto) : "0");
+                    cantidadSushiburger.setText(sushiburger != null ? String.valueOf(sushiburger) : "0");
+                    cantidadSushipizza.setText(sushipizza != null ? String.valueOf(sushipizza) : "0");
+                    checkBoxSoya.setChecked("Sí".equals(salsaSoya));
+                    checkBoxTeriyaki.setChecked("Sí".equals(salsaTeriyaki));
+                } else {
+                    Toast.makeText(activityEditarPedido.this, "El Pedido No Existe", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(activityEditarPedido.this, "Error Al Cargar Los Datos Del Pedido", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    public void eliminar() {
-        try {
-            SQLiteDatabase db = openOrCreateDatabase("SushiPatria", Context.MODE_PRIVATE, null);
-            String sql = "DELETE FROM productos WHERE id = ?";
-            SQLiteStatement statement = db.compileStatement(sql);
-
-            statement.bindString(1, id);
-
-            statement.execute();
-            Toast.makeText(this, "Pedido Eliminado Correctamente", Toast.LENGTH_LONG).show();
-
-            cantSushipleto.setText("");
-            cantSushiburger.setText("");
-            cantSushipizza.setText("");
-            elegirSalsaSoya.setChecked(false);
-            elegirSalsaTeriyaki.setChecked(false);
-
-        } catch (Exception ex) {
-            Toast.makeText(this, "Error, No Se Pudo Eliminar El Pedido", Toast.LENGTH_LONG).show();
+    private void actualizarPedidoEnFirebase() {
+        if (nombrePedido == null || nombrePedido.isEmpty()) {
+            Toast.makeText(this, "Error: El Nombre Del Pedido No Está Disponible", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        int sushipleto = Integer.parseInt(cantidadSushipleto.getText().toString().trim());
+        int sushiburger = Integer.parseInt(cantidadSushiburger.getText().toString().trim());
+        int sushipizza = Integer.parseInt(cantidadSushipizza.getText().toString().trim());
+        boolean salsaSoya = checkBoxSoya.isChecked();
+        boolean salsaTeriyaki = checkBoxTeriyaki.isChecked();
+        int totalAPagar = (sushipleto * 8000) + (sushiburger * 7000) + (sushipizza * 10000);
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Pedidos").child(pedidoId).child("Detalles Del Pedido");
+
+        HashMap<String, Object> pedidoActualizado = new HashMap<>();
+        pedidoActualizado.put("nombre", nombrePedido);
+        pedidoActualizado.put("sushipleto", sushipleto);
+        pedidoActualizado.put("sushiburger", sushiburger);
+        pedidoActualizado.put("sushipizza", sushipizza);
+        pedidoActualizado.put("salsaSoya", salsaSoya ? "Sí" : "No");
+        pedidoActualizado.put("salsaTeriyaki", salsaTeriyaki ? "Sí" : "No");
+        pedidoActualizado.put("totalAPagar", totalAPagar);
+
+        databaseReference.updateChildren(pedidoActualizado).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(activityEditarPedido.this, "Pedido Actualizado Correctamente", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(activityEditarPedido.this, "Error Al Actualizar El Pedido", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    public void editar() {
-        try {
-            String sushipleto = cantSushipleto.getText().toString();
-            String sushiburger = cantSushiburger.getText().toString();
-            String sushipizza = cantSushipizza.getText().toString();
-            long salsaSoya = elegirSalsaSoya.isChecked() ? 1 : 0;
-            long salsaTeriyaki = elegirSalsaTeriyaki.isChecked() ? 1 : 0;
+    private void eliminarPedidoDeFirebase() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Pedidos").child(pedidoId);
 
-            SQLiteDatabase db = openOrCreateDatabase("SushiPatria", Context.MODE_PRIVATE, null);
-
-            String sql = "UPDATE productos SET cantidadSushipleto = ?, cantidadSushiburger = ?, cantidadSushipizza = ?, salsaSoya = ?, salsaTeriyaki = ? WHERE id = ?";
-            SQLiteStatement statement = db.compileStatement(sql);
-
-            statement.bindString(1, sushipleto);
-            statement.bindString(2, sushiburger);
-            statement.bindString(3, sushipizza);
-            statement.bindLong(4, salsaSoya);
-            statement.bindLong(5, salsaTeriyaki);
-            statement.bindString(6, id);
-
-            statement.execute();
-            Toast.makeText(this, "Pedido Actualizado Correctamente", Toast.LENGTH_LONG).show();
-
-            cantSushipleto.setText("");
-            cantSushiburger.setText("");
-            cantSushipizza.setText("");
-            elegirSalsaSoya.setChecked(false);
-            elegirSalsaTeriyaki.setChecked(false);
-
-        } catch (Exception ex) {
-            Toast.makeText(this, "Error, No Se Pudo Actualizar El Pedido", Toast.LENGTH_LONG).show();
-        }
+        databaseReference.removeValue().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(activityEditarPedido.this, "Pedido Eliminado", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(activityEditarPedido.this, "Error Al Eliminar El Pedido", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

@@ -1,30 +1,58 @@
 package com.example.sushipatria;
 
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 public class activityVerPedidos extends AppCompatActivity {
 
-    private ListView listaPedidos;
-    private ArrayList<String> arregloPedidos = new ArrayList<>();
-    private ArrayAdapter<String> arrayAdapterPedidos;
+    private ListView verPedidos;
+    private List<String> pedidosList;
+    private ArrayAdapter<String> adapter;
+    private HashMap<Integer, String> pedidosIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ver_pedidos);
+
+        verPedidos = findViewById(R.id.verPedidos);
+        pedidosList = new ArrayList<>();
+        pedidosIds = new HashMap<>();
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, pedidosList);
+        verPedidos.setAdapter(adapter);
+
+        cargarPedidos();
+
+        verPedidos.setOnItemClickListener((parent, view, position, id) -> {
+            String pedidoId = pedidosIds.get(position);
+            if (pedidoId != null) {
+                Intent intent = new Intent(activityVerPedidos.this, activityEditarPedido.class);
+                intent.putExtra("pedidoId", pedidoId);
+                startActivity(intent);
+            } else {
+                Toast.makeText(activityVerPedidos.this, "Error Al Seleccionar Pedido", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         Button btnVolverEditarPedidos = findViewById(R.id.btnVolverEditarPedidos);
         btnVolverEditarPedidos.setOnClickListener(new View.OnClickListener() {
@@ -34,63 +62,81 @@ public class activityVerPedidos extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
 
-        try {
-            SQLiteDatabase db = openOrCreateDatabase("SushiPatria", Context.MODE_PRIVATE, null);
-            listaPedidos = findViewById(R.id.verPedidos);
+    private void cargarPedidos() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Pedidos");
 
-            final Cursor c = db.rawQuery("SELECT * FROM productos", null);
-            int id = c.getColumnIndex("id");
-            int cantidadSushipleto = c.getColumnIndex("cantidadSushipleto");
-            int cantidadSushiburger = c.getColumnIndex("cantidadSushiburger");
-            int cantidadSushipizza = c.getColumnIndex("cantidadSushipizza");
-            int salsaSoya = c.getColumnIndex("salsaSoya");
-            int salsaTeriyaki = c.getColumnIndex("salsaTeriyaki");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                pedidosList.clear();
+                pedidosIds.clear();
 
-            arregloPedidos.clear();
-            arrayAdapterPedidos = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arregloPedidos);
-            listaPedidos.setAdapter(arrayAdapterPedidos);
+                int position = 0;
+                for (DataSnapshot pedidoSnapshot : dataSnapshot.getChildren()) {
+                    try {
+                        DataSnapshot detallesSnapshot = pedidoSnapshot.child("Detalles Del Pedido");
+                        if (detallesSnapshot.exists()) {
+                            String pedidoId = detallesSnapshot.child("id").getValue(String.class);
+                            String nombre = detallesSnapshot.child("nombre").getValue(String.class);
+                            nombre = (nombre != null) ? nombre : "Sin nombre";
 
-            final ArrayList<Pedido> listaDatos = new ArrayList<>();
+                            String salsaSoya = detallesSnapshot.child("salsaSoya").getValue(String.class);
+                            salsaSoya = (salsaSoya != null) ? salsaSoya : "No";
 
-            if (c.moveToFirst()) {
-                do {
-                    Pedido pedido = new Pedido();
-                    pedido.id = c.getString(id);
-                    pedido.cantidadSushipleto = c.getString(cantidadSushipleto);
-                    pedido.cantidadSushiburger = c.getString(cantidadSushiburger);
-                    pedido.cantidadSushipizza = c.getString(cantidadSushipizza);
-                    pedido.salsaSoya = c.getInt(salsaSoya) == 1 ? "Sí" : "No";
-                    pedido.salsaTeriyaki = c.getInt(salsaTeriyaki) == 1 ? "Sí" : "No";
-                    listaDatos.add(pedido);
+                            String salsaTeriyaki = detallesSnapshot.child("salsaTeriyaki").getValue(String.class);
+                            salsaTeriyaki = (salsaTeriyaki != null) ? salsaTeriyaki : "No";
 
-                    arregloPedidos.add("ID: " + c.getString(id) + " | Sushipleto: " + c.getString(cantidadSushipleto) +
-                            " | Sushiburger: " + c.getString(cantidadSushiburger) +
-                            " | Sushipizza: " + c.getString(cantidadSushipizza) +
-                            " | Soya: " + pedido.salsaSoya +
-                            " | Teriyaki: " + pedido.salsaTeriyaki);
+                            int sushiburger = parseNumberSafe(detallesSnapshot.child("sushiburger").getValue());
+                            int sushipizza = parseNumberSafe(detallesSnapshot.child("sushipizza").getValue());
+                            int sushipleto = parseNumberSafe(detallesSnapshot.child("sushipleto").getValue());
 
-                } while (c.moveToNext());
-                arrayAdapterPedidos.notifyDataSetChanged();
-                listaPedidos.invalidateViews();
+                            int totalAPagar = parseNumberSafe(detallesSnapshot.child("totalAPagar").getValue());
+
+                            StringBuilder productos = new StringBuilder();
+                            if (sushiburger > 0) productos.append("Sushiburger (").append(sushiburger).append("), ");
+                            if (sushipizza > 0) productos.append("Sushipizza (").append(sushipizza).append("), ");
+                            if (sushipleto > 0) productos.append("Sushipleto (").append(sushipleto).append("), ");
+
+                            NumberFormat numberFormat = NumberFormat.getInstance(new Locale("es", "CL"));
+                            String totalFormateado = numberFormat.format(totalAPagar);
+
+                            String pedidoTexto = "Nombre: " + nombre + "\n" +
+                                    "Productos: " + (productos.length() > 0 ? productos.substring(0, productos.length() - 2) : "Ninguno") + "\n" +
+                                    "Salsa Soya: " + salsaSoya + "\n" +
+                                    "Salsa Teriyaki: " + salsaTeriyaki + "\n" +
+                                    "Total a Pagar: $" + totalFormateado;
+
+                            pedidosList.add(pedidoTexto);
+                            pedidosIds.put(position, pedidoId);
+                            position++;
+                        }
+                    } catch (Exception e) {
+                        Toast.makeText(activityVerPedidos.this, "Error Al Procesar Pedido: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                adapter.notifyDataSetChanged();
             }
 
-            listaPedidos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, android.view.View view, int position, long l) {
-                    Pedido pedido = listaDatos.get(position);
-                    Intent i = new Intent(getApplicationContext(), activityEditarPedido.class);
-                    i.putExtra("id", pedido.id);
-                    i.putExtra("cantidadSushipleto", pedido.cantidadSushipleto);
-                    i.putExtra("cantidadSushiburger", pedido.cantidadSushiburger);
-                    i.putExtra("cantidadSushipizza", pedido.cantidadSushipizza);
-                    i.putExtra("salsaSoya", pedido.salsaSoya.equals("Sí") ? "1" : "0");
-                    i.putExtra("salsaTeriyaki", pedido.salsaTeriyaki.equals("Sí") ? "1" : "0");
-                    startActivity(i);
-                }
-            });
-        } catch (Exception e) {
-            Toast.makeText(this, "Ha Ocurrido Un Error, Inténtalo Nuevamente.", Toast.LENGTH_SHORT).show();
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(activityVerPedidos.this, "Error Al Cargar Pedidos", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private int parseNumberSafe(Object value) {
+        if (value instanceof Long) {
+            return ((Long) value).intValue();
+        } else if (value instanceof String) {
+            try {
+                return Integer.parseInt((String) value);
+            } catch (NumberFormatException e) {
+                return 0;
+            }
         }
+        return 0;
     }
 }

@@ -1,54 +1,69 @@
 package com.example.sushipatria;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class activityCrearUsuario extends AppCompatActivity {
 
-    private EditText editTextUsuario;
-    private EditText editTextClave;
+    private EditText editTextCrearUsuario;
+    private EditText editTextCrearClave;
     private Button btnAgregarUsuario;
-    private DatabaseHelper databaseHelper;
+    private Button btnVolverCrearUsuario;
+    private FirebaseHelper firebaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_crear_usuario);
 
-        editTextUsuario = findViewById(R.id.editTextCrearUsuario);
-        editTextClave = findViewById(R.id.editTextCrearClave);
+        firebaseHelper = new FirebaseHelper();
+
+        editTextCrearUsuario = findViewById(R.id.editTextCrearUsuario);
+        editTextCrearClave = findViewById(R.id.editTextCrearClave);
         btnAgregarUsuario = findViewById(R.id.btnAgregarUsuario);
+        btnVolverCrearUsuario = findViewById(R.id.btnVolverCrearUsuario);
 
-        databaseHelper = new DatabaseHelper(this);
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        btnVolverCrearUsuario.setOnClickListener(v -> {
+            Intent intent = new Intent(activityCrearUsuario.this, MainActivity.class);
+            startActivity(intent);
+            finish();
         });
 
-        btnAgregarUsuario.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String username = editTextUsuario.getText().toString();
-                String password = editTextClave.getText().toString();
+        btnAgregarUsuario.setOnClickListener(v -> {
+            String username = editTextCrearUsuario.getText().toString().trim();
+            String password = editTextCrearClave.getText().toString().trim();
 
-                if (databaseHelper.isUserExists(username)) {
-                    Toast.makeText(activityCrearUsuario.this, "Usuario Existente", Toast.LENGTH_SHORT).show();
-                } else {
-                    databaseHelper.addUser(username, password);
-                    Toast.makeText(activityCrearUsuario.this, "Usuario Agregado Correctamente", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
+            if (username.isEmpty() || password.isEmpty()) {
+                Toast.makeText(activityCrearUsuario.this, "Por Favor, Ingrese Un Usuario Y Una Contraseña", Toast.LENGTH_SHORT).show();
+            } else {
+                firebaseHelper.revisarUsuarioExistente(username, new FirebaseHelper.FirebaseCallback() {
+                    @Override
+                    public void onSuccess(String message) {
+                        Toast.makeText(activityCrearUsuario.this, "Usuario Existente", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        firebaseHelper.agregarUsuario(username, password, new FirebaseHelper.FirebaseCallback() {
+                            @Override
+                            public void onSuccess(String message) {
+                                Toast.makeText(activityCrearUsuario.this, "Usuario Agregado Correctamente", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(activityCrearUsuario.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                Toast.makeText(activityCrearUsuario.this, "Error Al Agregar El Usuario", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
             }
         });
     }
