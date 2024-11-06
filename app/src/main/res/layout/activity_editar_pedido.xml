@@ -9,13 +9,13 @@
 
     <CheckBox
         android:id="@+id/editarSalsaTeriyaki"
-        android:layout_width="121dp"
-        android:layout_height="52dp"
+        android:layout_width="135dp"
+        android:layout_height="48dp"
         android:layout_marginStart="80dp"
         android:layout_marginTop="548dp"
         android:text="Salsa Teriyaki"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.306"
+        app:layout_constraintHorizontal_bias="0.341"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,9 +23,10 @@
         android:id="@+id/editarSalsaSoya"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="500dp"
+        android:layout_marginTop="504dp"
         android:text="Salsa Soya"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.477"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
